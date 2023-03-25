@@ -16,7 +16,7 @@ function App() {
         { path: '/users/:id', element: <User /> },
         { path: '/transactions', element: <Transactions /> },
         { path: '/transactions/:id', element: <Transaction /> },
-      ]
+      ],
 
     },
 
