@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import apiCaller from '../../utils/apiCaller';
 import Table from '../../components/Table';
 import FilterForm from '../../components/FilterForm';
+import AddUserForm from '../../components/AddUserForm';
 
 const Users = () => {
   const [data, setData] = useState([]);
@@ -53,6 +54,7 @@ const Users = () => {
       ) : (
         noResults
       )}
+      <AddUserForm setData={setData} />
     </div>
   );
 };

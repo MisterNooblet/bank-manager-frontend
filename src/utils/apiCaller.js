@@ -28,6 +28,13 @@ const apiCaller = {
     async addAccount(id) {
         const response = await axios.post(`${API_PATH}/users/${id}/addaccount`)
         return response.data
+    },
+    async addNewUser(params) {
+        await axios.post(`${API_PATH}/users`, params, {
+            headers: ["Content-Type": "application/json"]
+        })
+        const users = await this.getItems('users')
+        return users.data
     }
 }
 
