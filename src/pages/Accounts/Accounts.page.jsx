@@ -1,43 +1,58 @@
 import Table from '../../components/Table';
 import React, { useEffect, useState } from 'react';
 import apiCaller from '../../utils/apiCaller';
+import FilterForm from '../../components/FilterForm';
 
 const Accounts = () => {
-  const [users, setUsers] = useState([]);
+  const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
-  const getUsers = async () => {
-    const result = await apiCaller.getItems('accounts');
-    setUsers((prev) => (prev = result.data));
-    setColumns((prev) => (prev = Object.keys(result.data[0])));
-    let rowMap = result.data
-      .map((obj) => Object.values(obj))
-      .map((array) => {
-        let modifiedArray = [];
-        array.forEach((item) => {
-          console.log(typeof item);
-          if (typeof item !== 'object') {
-            modifiedArray.push(item);
-          } else {
-            modifiedArray.push(item.length);
-          }
-        });
+  const [noResults, setNoResults] = useState('');
 
-        return modifiedArray;
-      });
-    console.log(rowMap);
-    setRows((prev) => (prev = rowMap));
+  const getData = async () => {
+    const result = await apiCaller.getItems('accounts');
+    setData((prev) => (prev = result.data));
   };
 
   useEffect(() => {
-    getUsers();
+    if (data.length > 0) {
+      setColumns((prev) => (prev = Object.keys(data[0])));
+      let rowMap = data
+        .map((obj) => Object.values(obj))
+        .map((array) => {
+          let modifiedArray = [];
+          array.forEach((item) => {
+            if (typeof item !== 'object') {
+              modifiedArray.push(item.toString());
+            } else {
+              modifiedArray.push(item.length);
+            }
+          });
+
+          return modifiedArray;
+        });
+      setRows((prev) => (prev = rowMap));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return (
     <div>
-      {users && columns && rows ? (
-        <Table headers={columns} data={rows} />
-      ) : null}
+      <FilterForm
+        maxString={'balanceMax'}
+        minString={'balanceMin'}
+        target={'accounts'}
+        setResults={setData}
+        setNoResults={setNoResults}
+      />
+      {data.length > 0 && columns && rows ? (
+        <Table headers={columns} data={rows} parent={'accounts'} />
+      ) : (
+        noResults
+      )}
     </div>
   );
 };
