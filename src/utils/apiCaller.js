@@ -17,6 +17,10 @@ const apiCaller = {
         const response = await axios.get(`${API_PATH}/users/${id}`)
         return response.data
     },
+    async getAccout(id) {
+        const response = await axios.get(`${API_PATH}/accounts/${id}`)
+        return response.data
+    },
     async updateUser(id, name) {
         const response = await axios.put(`${API_PATH}/users/${id}`, { name: name })
         return response.data
@@ -30,11 +34,17 @@ const apiCaller = {
         return response.data
     },
     async addNewUser(params) {
-        await axios.post(`${API_PATH}/users`, params, {
-            headers: ["Content-Type": "application/json"]
-        })
+        await axios.post(`${API_PATH}/users`, params)
         const users = await this.getItems('users')
         return users.data
+    },
+    async deposit(amount, id) {
+        const result = await axios.post(`${API_PATH}/accounts/${id}/insideactions`, { amount: amount })
+        return result.data
+    },
+    async transfer(amount, recepient, id) {
+        const result = await axios.post(`${API_PATH}/accounts/${id}/transfer`, { amount: amount, to: recepient })
+        return result.data
     }
 }
 
