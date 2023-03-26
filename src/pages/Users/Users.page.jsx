@@ -1,43 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import apiCaller from '../../utils/apiCaller';
 import Table from '../../components/Table';
-import { useParams } from 'react-router-dom';
+import FilterForm from '../../components/FilterForm';
 
 const Users = () => {
-  const [users, setUsers] = useState([]);
+  const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
+  const [noResults, setNoResults] = useState('');
 
-  const getUsers = async () => {
+  const getData = async () => {
     const result = await apiCaller.getItems('users');
-    setUsers((prev) => (prev = result.data));
-    setColumns((prev) => (prev = Object.keys(result.data[0])));
-    let rowMap = result.data
-      .map((obj) => Object.values(obj))
-      .map((array) => {
-        let modifiedArray = [];
-        array.forEach((item) => {
-          if (typeof item !== 'object') {
-            modifiedArray.push(item);
-          } else {
-            modifiedArray.push(item.length);
-          }
-        });
-
-        return modifiedArray;
-      });
-    setRows((prev) => (prev = rowMap));
+    setData((prev) => (prev = result.data));
   };
 
   useEffect(() => {
-    getUsers();
+    if (data.length > 0) {
+      setColumns((prev) => (prev = Object.keys(data[0])));
+      let rowMap = data
+        .map((obj) => Object.values(obj))
+        .map((array) => {
+          let modifiedArray = [];
+          array.forEach((item) => {
+            if (typeof item !== 'object') {
+              modifiedArray.push(item);
+            } else {
+              modifiedArray.push(item.length);
+            }
+          });
+
+          return modifiedArray;
+        });
+      setRows((prev) => (prev = rowMap));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return (
     <div>
-      {users && columns && rows ? (
+      <FilterForm
+        maxString={'wealthMax'}
+        minString={'wealthMin'}
+        target={'users'}
+        setResults={setData}
+        setNoResults={setNoResults}
+      />
+      {data.length > 0 && columns && rows ? (
         <Table headers={columns} data={rows} parent={'users'} />
-      ) : null}
+      ) : (
+        noResults
+      )}
     </div>
   );
 };
