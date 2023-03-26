@@ -29,14 +29,12 @@ const Account = () => {
 
   useEffect(() => {
     if (data.length > 0) {
-      console.log(data);
       setColumns((prev) => (prev = Object.keys(data[0])));
       let rowMap = data
         .map((obj) => Object.values(obj))
         .map((array) => {
           let modifiedArray = [];
           array.forEach((item) => {
-            console.log(item);
             if (typeof item !== 'object') {
               modifiedArray.push(item);
             } else if (item === null) {

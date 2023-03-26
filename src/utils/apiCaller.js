@@ -48,8 +48,6 @@ const apiCaller = {
     },
     async getAccountTransactions(id) {
         const result = await axios.get(`${API_PATH}/transactions/from`, { from: id })
-        console.log(id);
-        console.log(result);
         return result.data
     }
 }

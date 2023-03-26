@@ -12,7 +12,6 @@ const User = () => {
   const getUser = async () => {
     const results = await apiCaller.getUser(params.id);
     setUser((prev) => (prev = results.data));
-    console.log(results.data);
   };
 
   useEffect(() => {
