@@ -45,6 +45,12 @@ const apiCaller = {
     async transfer(amount, recepient, id) {
         const result = await axios.post(`${API_PATH}/accounts/${id}/transfer`, { amount: amount, to: recepient })
         return result.data
+    },
+    async getAccountTransactions(id) {
+        const result = await axios.get(`${API_PATH}/transactions/from`, { from: id })
+        console.log(id);
+        console.log(result);
+        return result.data
     }
 }
 

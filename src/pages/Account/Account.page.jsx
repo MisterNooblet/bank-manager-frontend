@@ -1,4 +1,5 @@
 import { Typography } from '@mui/material';
+import Table from '../../components/Table';
 import { Container } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -9,6 +10,10 @@ import apiCaller from '../../utils/apiCaller';
 const Account = () => {
   const [account, setAccount] = useState(null);
 
+  const [data, setData] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const [rows, setRows] = useState([]);
+
   const params = useParams();
   const getAccount = async () => {
     const result = await apiCaller.getAccout(params.id);
@@ -17,8 +22,38 @@ const Account = () => {
       (prev) => (prev = { ...result.data, ownerName: ownerName.data.name })
     );
   };
+  const getData = async () => {
+    const result = await apiCaller.getAccountTransactions(params.id);
+    setData((prev) => (prev = result.data));
+  };
 
   useEffect(() => {
+    if (data.length > 0) {
+      console.log(data);
+      setColumns((prev) => (prev = Object.keys(data[0])));
+      let rowMap = data
+        .map((obj) => Object.values(obj))
+        .map((array) => {
+          let modifiedArray = [];
+          array.forEach((item) => {
+            console.log(item);
+            if (typeof item !== 'object') {
+              modifiedArray.push(item);
+            } else if (item === null) {
+              modifiedArray.push(item);
+            } else {
+              modifiedArray.push(item.length);
+            }
+          });
+
+          return modifiedArray;
+        });
+      setRows((prev) => (prev = rowMap));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getData();
     getAccount();
     //eslint-disable-next-line
   }, []);
@@ -26,15 +61,18 @@ const Account = () => {
   return (
     <>
       {account && (
-        <Container>
-          <Typography>Account ID : {account._id}</Typography>
-          <Typography>Account Owner : {account.ownerName}</Typography>
-          <Typography>Balance : {account.balance}</Typography>
-          <DepositForm account={params.id} setAccount={setAccount} />
-          <Typography>Credit : {account.credit}</Typography>
-          <TransferForm setAccount={setAccount} id={params.id} />
-          <Typography>Transactions:</Typography>
-        </Container>
+        <>
+          <Container>
+            <Typography>Account ID : {account._id}</Typography>
+            <Typography>Account Owner : {account.ownerName}</Typography>
+            <Typography>Balance : {account.balance}</Typography>
+            <DepositForm account={params.id} setAccount={setAccount} />
+            <Typography>Credit : {account.credit}</Typography>
+            <TransferForm setAccount={setAccount} id={params.id} />
+            <Typography>Transactions:</Typography>
+          </Container>
+          <Table headers={columns} data={rows} parent={'transactions'} />
+        </>
       )}
     </>
   );
